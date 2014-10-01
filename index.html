@@ -43,19 +43,24 @@
     <div id="map_canvas" style="width:100%; height:100%"></div>
 
     <div class="panel panel-primary info-panel">
-      <div class='panel-heading'>Unde pot sa votez ?</div>
-      <div class="panel-body" id='voteSections-city'> 
+      <div class='panel-heading'>Unde pot sa votez ? Alege o localitate</div>
+      <div class="panel-body" id='voteSections-city' hidden> 
         <!-- <span class="glyphicon glyphicon-map-marker"></span> -->
         Ati selectat: <p></p>
         <!-- <span class="glyphicon glyphicon-align-justify"></span>  -->
         Sectii de votare disponibile: 
       </div>
-      <ul class="list-group" id='voteSections-list'>       
+      <ul class="list-group" id='voteSections-list' hidden>       
       </ul>
     </div>
 
     <script type="text/javascript">
     $(document).ready(function() {
+
+      $('.panel-heading').on('click', function(){
+        $('#voteSections-city, #voteSections-list').toggle();
+      });
+
       $.getJSON("listaCuLocation.json", function(json1) {
         $.each(json1, function(key, data) {
           var latLng = new google.maps.LatLng(data.Longitudine, data.Latitudine); 
@@ -74,6 +79,7 @@
               $.each(marker.sectii, function(key, data){
                 $('#voteSections-list').append('<li class="list-group-item">' + data + '</li>');
               })
+              $('.panel-heading').text('Unde pot sa votez ?');
             });
 
           });

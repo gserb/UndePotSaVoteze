@@ -79,7 +79,7 @@ src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCKBB8H27s0LSER0CW_FbFG0NnT
         <div class="input-group">
             <input type="textbox" class="form-control" placeholder="Sectorul 2, Bucuresti" id="address-search" name="query" value=""> 
             <div class="input-group-btn">
-                <button type="button" class="btn btn-primary" value="Geocode" onclick="codeAddress()"><span class="glyphicon glyphicon-search"></span></button>
+                <button type="button" class="btn btn-primary" value="Geocode" ><span class="glyphicon glyphicon-search"></span></button>
             </div>
         </div>
     </div>
@@ -153,7 +153,7 @@ $(document).ready(function() {
     });
 
     function codeAddress() {
-      var address = document.getElementById('address-search').value;
+      var address = document.getElementById('address-search').value ;
       geocoder.geocode( { 'address': address}, function(results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
           
@@ -181,6 +181,9 @@ $(document).ready(function() {
         }             
   });
 
+  $('#address-search-btn').on('click', function(){        
+        codeAddress();                     
+  });
 
 });
 </script>

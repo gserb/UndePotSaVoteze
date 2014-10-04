@@ -1,77 +1,224 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
-  <style type="text/css">
-  html { height: 100% }
-  body { height: 100%; margin: 0; padding: 0 }
-  #map_canvas { height: 100% }
-  #voteSections-city p {
-    font-weight: bold;
-  }
-  .info-panel { 
-    margin-top: 2em;
-    margin-right: 0.4em;          
-    width: 20em;
-    max-height: 30em;
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    overflow: auto;}
-    </style>
-    <script type="text/javascript"
-    src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCKBB8H27s0LSER0CW_FbFG0NnTdz93L3g&sensor=true">
-    </script>
-    <script type="text/javascript">
-    var map;
-    function initialize() {
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+    html { height: 100% }
+    body { height: 100%; margin: 0; padding: 0 }
+    #map_canvas { height: 100% }
+    #voteSections-city p {
+        font-weight: bold;
+    }
+    .info-panel { 
+        margin-top: 2em;
+        margin-right: 0.4em;          
+        width: 20em;
+        max-height: 30em;
+        position: absolute;
+        top: 3em;
+        right: 0px;
+        overflow: auto;
+    }
 
+    #panel {
+        position: absolute;
+        /*top: 5px;
+        left: 50%;
+        margin-left: -180px;*/
+        z-index: 5;
+        /*background-color: #fff;*/
+        padding: 5px;
+        /*border: 1px solid #999;*/
+        right: 0px;
+        margin-top: 2em;
+        margin-right: 0.2em;          
+        /*width: 20em;*/
+    }
+
+    #panel #address {        
+        width: 17.1em;
+    }
+
+    </style>
+<script type="text/javascript"
+src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCKBB8H27s0LSER0CW_FbFG0NnTdz93L3g&sensor=true">
+</script>
+<script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>   
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+<script type="text/javascript">
+    var geocoder,
+        map,
+        dataList;
+
+    function initialize() {
+      geocoder = new google.maps.Geocoder();
       var mapOptions = {
         center: new google.maps.LatLng(44.45102, 26.0492532),
         zoom: 10,
         mapTypeId: google.maps.MapTypeId.ROADMAP
-      };
-      map = new google.maps.Map(document.getElementById("map_canvas"),
+    };
+
+    map = new google.maps.Map(document.getElementById("map_canvas"),
         mapOptions);
     }
-    </script>
-    <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>   
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
-    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-  </head>
-  <body onload="initialize()">
+
+    function codeAddress() {
+      var address = document.getElementById('address').value;
+      geocoder.geocode( { 'address': address}, function(results, status) {
+        if (status == google.maps.GeocoderStatus.OK) {
+          
+            map.setCenter(results[0].geometry.location);
+            map.setZoom(12);
+
+            var Latitudine = results[0].geometry.location.B,
+            Longitudine = results[0].geometry.location.k;
+
+            console.log('Adresa cautata: ' + address);
+            console.log('Latitudine calculata Google: ' + Latitudine);
+            console.log('Longitudine calculata Google: ' + Longitudine);
+
+
+            // calculate distance between two geol. points
+            // var calculateDistance = function(p1, p2) {
+            //     var erdRadius = 1371;
+
+            //     p1.Longitude = p1.Longitude * (Math.PI / 180);
+            //     p1.Latitude = p1.Latitude * (Math.PI / 180);
+            //     p2.Longitude = p2.Longitude * (Math.PI / 180);
+            //     p2.Latitude = p2.Latitude * (Math.PI / 180);
+
+            //     var x0 = p1.Longitude * erdRadius * Math.cos(p1.Latitude);
+            //     var y0 = p1.Latitude * erdRadius;
+
+            //     var x1 = p2.Longitude * erdRadius * Math.cos(p2.Latitude);
+            //     var y1 = p2.Latitude * erdRadius;
+
+            //     var dx = x0 - x1;
+            //     var dy = y0 - y1;
+
+            //     return Math.sqrt((dx * dx) + (dy * dy));
+            // }
+
+            // var array = [];
+            // $.each(dataList, function(index, value){
+            //     var element = value;
+            //     var origin = {
+            //         Longitude: parseFloat(Longitudine.toFixed(5)),
+            //         Latitude: parseFloat(Latitudine.toFixed(5))
+            //     };
+            //     element.Position = {
+            //         Longitude: element.Longitudine,
+            //         Latitude: element.Latitudine
+            //     };
+
+            //     array.push({
+            //         cityName: element.Localitate,
+            //         longitudine: element.Longitudine,
+            //         latitudine: element.Latitudine,
+            //         distance: calculateDistance(origin, element.Position),
+            //         sectii: element.Sectii
+            //     });
+            // });
+
+            // // sort the items according to their distance; array[0] will have min distance
+            // array.sort(function (a, b) {
+            //     return a.distance - b.distance;
+            // });
+
+            // var marker = new google.maps.Marker({
+            //   map: map,
+            //   position: results[0].geometry.location,
+            //   title: array[0].cityName
+            // });
+
+            // marker.sectii = array[0].sectii;
+            // marker.setMap(map);
+            // console.log('lon:' + array[0].longitudine);
+            // console.log('lat:' + array[0].latitudine);
+
+            //populate list on click on a marker
+            // google.maps.event.addListener(marker, "click", function() {
+            //   $('#voteSections-list >').remove();
+            //   $('#voteSections-city p').text(marker.title);
+            //   $.each(marker.sectii, function(key, data){
+            //     $('#voteSections-list').append('<li class="list-group-item">' + data + '</li>');
+            //     })
+            //       $('.panel-heading').text('Unde pot sa votez ?');
+            //       $('#voteSections-city, #voteSections-list').show();
+            // });
+
+
+        } else {
+          console.log('Geocode was not successful for the following reason: ' + status);
+        }
+    });
+    }
+</script>
+
+</head>
+<body onload="initialize()">
+
+    <div id="panel">
+        <div class="input-group">
+            <input type="textbox" class="form-control" 
+             placeholder="Sectorul 2, Bucuresti" id="address" name="query" value=""> 
+            <div class="input-group-btn">
+                <button type="button" class="btn btn-primary" value="Geocode" onclick="codeAddress()"><span class="glyphicon glyphicon-search"></span></button>
+            </div>
+        </div>
+    </div>
+
     <div id="map_canvas" style="width:100%; height:100%"></div>
 
     <div class="panel panel-primary info-panel">
-      <div class='panel-heading'>Unde pot sa votez ? Alege o localitate 
-       <!--  <div class="btn-group">
-            <button  class="btn btn-primary btn-xs">
-              <span class="glyphicon glyphicon-chevron-down"></span> 
-            </button>
-        </div> -->
-        
- </div>
-      <div class="panel-body" id='voteSections-city' hidden> 
-        <!-- <span class="glyphicon glyphicon-map-marker"></span> -->
-        Ati selectat: <p></p>
-        <!-- <span class="glyphicon glyphicon-align-justify"></span>  -->
-        Sectii de votare disponibile: 
-      </div>
-      <ul class="list-group" id='voteSections-list' hidden>       
-      </ul>
+
+
+        <div class='panel-heading'>Unde pot sa votez ? Alege o localitate 
+            <!-- <div class="input-group-btn">
+                    <button  class="btn btn-primary btn-xs" value="Geocode" onclick="codeAddress()">
+                    <span class="glyphicon glyphicon-chevron-down"></span></button>
+            </div> -->
+               
+        </div>
+        <div class="panel-body" id='voteSections-city' hidden> 
+            <!-- <span class="glyphicon glyphicon-map-marker"></span> -->
+            Ati selectat: <p></p>
+            <!-- <span class="glyphicon glyphicon-align-justify"></span>  -->
+            Sectii de votare disponibile: 
+        </div>
+        <ul class="list-group" id='voteSections-list' hidden>       
+        </ul>
     </div>
 
-    <script type="text/javascript">
-    $(document).ready(function() {
+<script type="text/javascript">
+$(document).ready(function() {
 
-      $('.panel-heading').on('click', function(){
-        $('#voteSections-city, #voteSections-list').toggle();
-      });
+  $('.panel-heading').on('click', function(){
+    $('#voteSections-city, #voteSections-list').toggle();
+  });
+
+  // Search when press ENTER in the textbox
+  $('#address').keypress(function(e){
+        if(e.keyCode == 13){
+            codeAddress();
+        }       
+        
+  });
+
+   
+      // public object with all items from json      
 
       $.getJSON("listaCuLocation.json", function(json1) {
+        
+        var markerePeHarta = 0;         
+        dataList = json1;        
+        
         $.each(json1, function(key, data) {
-          var latLng = new google.maps.LatLng(data.Longitudine, data.Latitudine); 
+
+            var latLng = new google.maps.LatLng(data.Longitudine, data.Latitudine); 
             // Creating a marker and putting it on the map
             var marker = new google.maps.Marker({
               position: latLng,
@@ -80,23 +227,28 @@
             marker.sectii = data.Sectii;
             marker.setMap(map);
 
+            // increment the number of markers on map
+            markerePeHarta += 1;
+
             //populate list on click on a marker
             google.maps.event.addListener(marker, "click", function() {
               $('#voteSections-list >').remove();
               $('#voteSections-city p').text(marker.title);
               $.each(marker.sectii, function(key, data){
                 $('#voteSections-list').append('<li class="list-group-item">' + data + '</li>');
-              })
-              $('.panel-heading').text('Unde pot sa votez ?');
-              $('#voteSections-city, #voteSections-list').show();
+                })
+                  $('.panel-heading').text('Unde pot sa votez ?');
+                  $('#voteSections-city, #voteSections-list').show();
             });
 
-          });
-      });
-
-      
-
+        });
+        
+        console.log('markerePeHarta: ' + markerePeHarta);
+        console.log('obiecteInJson: ' + dataList.length );
+    
     });
-    </script>
-  </body>
-  </html>
+
+});
+</script>
+</body>
+</html>

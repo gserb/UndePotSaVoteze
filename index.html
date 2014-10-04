@@ -12,7 +12,7 @@
     .info-panel { 
         margin-top: 2em;
         margin-right: 0.4em;          
-        width: 20em;
+        width: 21em;
         max-height: 30em;
         position: absolute;
         top: 3em;
@@ -31,12 +31,12 @@
         /*border: 1px solid #999;*/
         right: 0px;
         margin-top: 2em;
-        margin-right: 0.2em;          
+        margin-right: 0.19em;          
         /*width: 20em;*/
     }
 
-    #panel #address {        
-        width: 17.1em;
+    #panel #address-search {        
+        width: 18.1em;
     }
 
     #panel .input-group {
@@ -51,6 +51,7 @@ src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCKBB8H27s0LSER0CW_FbFG0NnT
 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
 <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
 
 <script type="text/javascript">
     var geocoder,
@@ -79,7 +80,7 @@ src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCKBB8H27s0LSER0CW_FbFG0NnT
         <div class="input-group">
             <input type="textbox" class="form-control" placeholder="Sectorul 2, Bucuresti" id="address-search" name="query" value=""> 
             <div class="input-group-btn">
-                <button type="button" class="btn btn-primary" value="Geocode" id='address-search-btn' ><span class="glyphicon glyphicon-search"></span></button>
+                <button type="button" class="btn btn-primary" value="Geocode" id='#address-search-btn' ><span class="glyphicon glyphicon-search"></span></button>
             </div>
         </div>
     </div>
@@ -87,9 +88,13 @@ src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCKBB8H27s0LSER0CW_FbFG0NnT
     <div id="map_canvas" style="width:100%; height:100%"></div>
 
     <div class="panel panel-primary info-panel">
+ 
+        <div class='panel-heading'>Unde pot sa votez ? Alege o localitate <i class="fa fa-map-marker fa-lg"></i>
 
+          
 
-        <div class='panel-heading'>Unde pot sa votez ? Alege o localitate 
+           
+
             <!-- <div class="input-group-btn">
                     <button  class="btn btn-primary btn-xs" value="Geocode" onclick="codeAddress()">
                     <span class="glyphicon glyphicon-chevron-down"></span></button>
@@ -141,7 +146,7 @@ $(document).ready(function() {
                   $.each(marker.sectii, function(key, data){
                     $('#voteSections-list').append('<li class="list-group-item">' + data + '</li>');
                     })
-                      $('.panel-heading').text('Unde pot sa votez ?');
+                      $('.panel-heading').html('Unde pot sa votez ? <i style="float:right" id="info-pannel-chevron" class="fa fa-chevron-up"></i>');
                       $('#voteSections-city, #voteSections-list').show();
                 });
 
@@ -181,8 +186,12 @@ $(document).ready(function() {
         }             
   });
 
-  $('#address-search-btn').on('click', function(){        
+  $('#address-search-btn').on('click', function() {        
         codeAddress();                     
+  });
+
+  $('.panel-heading').on('click', function() {
+     $('#info-pannel-chevron').toggleClass( "fa-chevron-up" ).toggleClass( "fa-chevron-down" );
   });
 
 });

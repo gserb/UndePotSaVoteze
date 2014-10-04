@@ -12,7 +12,7 @@
     .info-panel { 
         margin-top: 2em;
         margin-right: 0.4em;          
-        width: 21em;
+        width: 20em;
         max-height: 30em;
         position: absolute;
         top: 3em;
@@ -36,16 +36,19 @@
     }
 
     #panel #address-search {        
-        width: 18.1em;
+        width: 14.7em;
     }
 
     #panel .input-group {
         width: 20em;
     }
 
+    .panel-heading {
+        padding-left: 0.7em !important;
+    }
+
     </style>
-<script type="text/javascript"
-src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCKBB8H27s0LSER0CW_FbFG0NnTdz93L3g&sensor=true">
+<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCKBB8H27s0LSER0CW_FbFG0NnTdz93L3g&sensor=true">
 </script>
 <script type="text/javascript" src="http://code.jquery.com/jquery-latest.min.js"></script>   
 <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
@@ -62,7 +65,7 @@ src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCKBB8H27s0LSER0CW_FbFG0NnT
       geocoder = new google.maps.Geocoder();
       var mapOptions = {
         center: new google.maps.LatLng(44.45102, 26.0492532),
-        zoom: 10,
+        zoom: 11,
         mapTypeId: google.maps.MapTypeId.ROADMAP
     };
 
@@ -80,31 +83,22 @@ src="http://maps.googleapis.com/maps/api/js?key=AIzaSyCKBB8H27s0LSER0CW_FbFG0NnT
         <div class="input-group">
             <input type="textbox" class="form-control" placeholder="Sectorul 2, Bucuresti" id="address-search" name="query" value=""> 
             <div class="input-group-btn">
-                <button type="button" class="btn btn-primary" value="Geocode" id='#address-search-btn' ><span class="glyphicon glyphicon-search"></span></button>
+                <button type="button" class="btn btn-primary c-info" data-toggle="tooltip" data-original-title="Cauta localitatea" value="Geocode" id='address-search-btn' ><span class="glyphicon glyphicon-search"></span></button>
+                <button type="button" class="btn btn-info c-info" id='locate-me-btn' data-toggle="tooltip" data-original-title="Localizeaza-ma pe harta" >
+                        <i class="fa fa-child"></i>
+                </button>                
             </div>
         </div>
     </div>
 
     <div id="map_canvas" style="width:100%; height:100%"></div>
 
-    <div class="panel panel-primary info-panel">
- 
-        <div class='panel-heading'>Unde pot sa votez ? Alege o localitate <i class="fa fa-map-marker fa-lg"></i>
-
-          
-
-           
-
-            <!-- <div class="input-group-btn">
-                    <button  class="btn btn-primary btn-xs" value="Geocode" onclick="codeAddress()">
-                    <span class="glyphicon glyphicon-chevron-down"></span></button>
-            </div> -->
-               
+    <div class="panel panel-primary info-panel c-info-left" data-toggle="tooltip" data-original-title="Dupa ce vei selecta un marker de pe harta, iti voi arata lista cu sectiile de votare din localitatea respectiva. Daca doresti ca acest mesaj sa nu mai apara, apasa pe meniul albastru 'Unde pot sa votez?'">
+        
+        <div class='panel-heading'>Unde pot sa votez ? Alege o localitate  <i style="float:right; margin-top: 0.3em;" class="fa fa-info-circle"></i>               
         </div>
-        <div class="panel-body" id='voteSections-city' hidden> 
-            <!-- <span class="glyphicon glyphicon-map-marker"></span> -->
-            Ati selectat: <p></p>
-            <!-- <span class="glyphicon glyphicon-align-justify"></span>  -->
+        <div class="panel-body" id='voteSections-city' hidden>             
+            Ati selectat: <p></p>            
             Sectii de votare disponibile: 
         </div>
         <ul class="list-group" id='voteSections-list' hidden>       
@@ -117,8 +111,6 @@ $(document).ready(function() {
   $('.panel-heading').on('click', function(){
     $('#voteSections-city, #voteSections-list').toggle();
   });
-   
-      // public object with all items from json      
 
     $.getJSON("listaCuLocation.json", function(json1) {
         
@@ -152,12 +144,34 @@ $(document).ready(function() {
 
             });
             
-            console.log('markerePeHarta: ' + markerePeHarta);
-            console.log('obiecteInJson: ' + dataList.length );
+            // console.log('markerePeHarta: ' + markerePeHarta);
+            // console.log('obiecteInJson: ' + dataList.length );
     
     });
 
-    function codeAddress() {
+    var getUserPosition = function() {
+
+
+        navigator.geolocation.getCurrentPosition(function(position) {
+                
+                    var geolocate = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+                    
+                    var infowindow = new google.maps.InfoWindow({
+                        map: map,
+                        position: geolocate,
+                        content:
+                            '<h5>Esti aici !</h5>'                             
+                    });
+                    
+                    map.setCenter(geolocate);
+                    map.setZoom(13);
+                    
+                });
+
+    };
+
+
+    var codeAddress = function () {
       var address = document.getElementById('address-search').value ;
       geocoder.geocode( { 'address': address}, function(results, status) {
         if (status == google.maps.GeocoderStatus.OK) {
@@ -180,19 +194,31 @@ $(document).ready(function() {
 
 
       // Search when press ENTER in the textbox
-  $('#address-search').on('keypress', function(e){
-        if(e.keyCode == 13){
-            codeAddress();
-        }             
-  });
+      $('#address-search').on('keypress', function(e){
+            if(e.keyCode == 13){
+                codeAddress();
+            }             
+      });
 
-  $('#address-search-btn').on('click', function() {        
-        codeAddress();                     
-  });
+      $('#address-search-btn').on('click', function() {        
+            codeAddress();                     
+      });
 
-  $('.panel-heading').on('click', function() {
-     $('#info-pannel-chevron').toggleClass( "fa-chevron-up" ).toggleClass( "fa-chevron-down" );
-  });
+      $('.panel-heading').on('click', function() {
+         $('#info-pannel-chevron').toggleClass( "fa-chevron-up" ).toggleClass( "fa-chevron-down" );
+         $('.c-info-left').tooltip('destroy');
+      });
+
+      $('.c-info').tooltip();
+      $('.c-info-left').tooltip({
+          content: function () {
+              return this.getAttribute('title');
+          },
+          placement: 'left'
+      });
+
+      $('#locate-me-btn').click(getUserPosition);
+  
 
 });
 </script>
